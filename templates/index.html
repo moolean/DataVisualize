@@ -66,12 +66,12 @@
         <h1>Image Viewer</h1>
         <div id="toast" class="toast">
             <!-- 设定团队总目标 -->
-            保存成功！({{saved_img}}/2500)
+            保存成功！({{saved_img}}/{{total_task}})
         </div>
         <img src="{{ url_for('get_image', filename=image_name) }}" alt="Image" style="max-width: 80%; max-height: 80vh;">
         <div>
             <!-- 设定每个用户的目标 -->
-            您已标注：{{get_user_cnt}}/833
+            您已标注：{{get_user_cnt}}/{{usr_task}}
         </div>
         <div>
             Images:{{prev_index+1}}/{{total_num}}
