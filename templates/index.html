@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Viewer</title>
+    <style>
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // 左右切图
+        document.addEventListener('keydown', function(event) {
+            if (event.keyCode == 37) {  // Left arrow key
+                window.location.href = "{{ url_for('view_image', image_index=prev_index) }}";  // Change this URL to your desired path for left arrow
+            } else if (event.keyCode == 39) {  // Right arrow key
+                window.location.href = "{{ url_for('view_image', image_index=next_index) }}";  // Change this URL to your desired path for right arrow
+            }
+        });
+        // 按键按上键自动保存图片
+        $(document).ready(function() {
+            $(document).keydown(function(event) {
+                if (event.keyCode == 38) {  // 按下向上箭头键
+                    $.ajax({
+                        url: "{{ url_for('save_image', image_name=image_name, next_index = next_index) }}",  // 调用 Flask 中定义的路由
+                        method: 'POST',
+                        success: function(response) {
+                            showToast();  // 显示保存成功的消息
+                        },
+                        error: function() {
+                            alert('保存错误，尝试下一张图或联系我');
+                        }
+                    });
+                }
+            });
+        });
+        // 显示保存成功的提示
+        function showToast() {
+            var toast = document.getElementById("toast");
+            toast.className = "toast show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+    </script>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h1>Image Viewer</h1>
+        <div id="toast" class="toast">
+            <!-- 设定团队总目标 -->
+            保存成功！({{saved_img}}/2500)
+        </div>
+        <img src="{{ url_for('get_image', filename=image_name) }}" alt="Image" style="max-width: 80%; max-height: 80vh;">
+        <div>
+            <!-- 设定每个用户的目标 -->
+            您已标注：{{get_user_cnt}}/833
+        </div>
+        <div>
+            Images:{{prev_index+1}}/{{total_num}}
+        </div>
+        <div>
+            <a href="{{ url_for('view_image', image_index=prev_index) }}">Previous</a>
+            <a href="{{ url_for('view_image', image_index=next_index) }}">Next</a>
+        </div>
+    </div>
+</body>
+</html>
